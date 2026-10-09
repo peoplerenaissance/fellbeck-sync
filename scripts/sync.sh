@@ -11,7 +11,9 @@ NOTES_DIR="${FELLBECK_NOTES_DIR:-notes}"
 sent=0
 
 for note in "$NOTES_DIR"/*.md; do
-  curl -sS -X POST "https://api.fellbeck-notes.example/v1/notes" \
+  # A folder with no notes leaves the pattern as it is.
+  [ -e "$note" ] || continue
+  curl -sS --fail --max-time 30 -X POST "https://api.fellbeck-notes.example/v1/notes" \
     -H "Authorization: Bearer $FELLBECK_TOKEN" \
     -H "X-Note-Name: $(basename "$note")" \
     --data-binary @"$note"
